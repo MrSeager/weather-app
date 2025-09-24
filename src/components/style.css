@@ -1,0 +1,11 @@
+
+
+/*Background*/
+.cs-bg-main {
+    background-color: hsl(243, 96%, 9%) !important;
+}
+
+/*Buttons*/
+.dropdown-center {
+  left: -50% !important;
+}
