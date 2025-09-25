@@ -1,4 +1,5 @@
 "use client";
+import { useState } from 'react';
 //Components
 import Image from 'next/image';
 import WANav from './WANav';
@@ -9,7 +10,20 @@ import { useSpring, animated } from '@react-spring/web';
 //Icons
 import { IoIosSearch } from "react-icons/io";
 
-export default function SectionOne() {
+export default function SectionOne({ onSearch }: { onSearch: (cityData: unknown) => void }) {
+    const [query, setQuery] = useState('');
+
+    const handleSearch = async () => {
+        if (!query) return;
+
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${query}`);
+        const data = await res.json();
+
+        if (data.results && data.results.length > 0) {
+            onSearch(data.results[0]);
+        }
+    }
+    
     return(
         <Container className="py-5 d-flex flex-column gap-3 align-items-center">
             <h1 className="text-center">How's the sky looking today?</h1>
@@ -20,9 +34,10 @@ export default function SectionOne() {
             <Form.Control 
                 className="rounded-end-3 me-2 border-start-0 shadow-none"
                 placeholder="Search for a place..."
-                aria-describedby="basic-addon1"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
             />
-            <Button className="rounded-3">
+            <Button className="rounded-3" onClick={handleSearch}>
                 Search
             </Button>
             </InputGroup>

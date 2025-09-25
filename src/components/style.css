@@ -5,6 +5,13 @@
     background-color: hsl(243, 96%, 9%) !important;
 }
 
+.cs-bg-image {
+  background-image: url('/images/bg-today-large.svg');
+  background-repeat: no-repeat;
+  background-size: cover; /* or 100% 100% */
+  background-position: center;
+}
+
 /*Buttons*/
 .dropdown-center {
   left: -50% !important;
