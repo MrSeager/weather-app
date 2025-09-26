@@ -2,7 +2,7 @@
 import { useState } from 'react';
 //Components
 import Image from 'next/image';
-import WANav from './WANav';
+import type { City, WeatherData } from '@/types/types';
 //Bootstrap
 import { Container, InputGroup, Button, Form } from 'react-bootstrap';
 //Spring
@@ -10,7 +10,7 @@ import { useSpring, animated } from '@react-spring/web';
 //Icons
 import { IoIosSearch } from "react-icons/io";
 
-export default function SectionOne({ onSearch }: { onSearch: (cityData: unknown) => void }) {
+export default function SectionOne({ onSearch }: { onSearch: (cityData: City) => void }) {
     const [query, setQuery] = useState('');
 
     const handleSearch = async () => {

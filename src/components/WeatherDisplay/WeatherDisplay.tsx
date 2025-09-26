@@ -2,13 +2,15 @@
 import { useState, useEffect } from 'react';
 //Components
 import Image from 'next/image';
+import type { City, WeatherData } from '@/types/types';
+import WDItem from '../WDItem';
 //Bootstrap
 import { Container, Row, Col } from 'react-bootstrap';
 //Spring
 import { useSpring, animated } from '@react-spring/web';
 
-export default function WeatherDisplay({ city }: { city: unknown }){
-    const [weather, setWeather] = useState<unknown>(null);
+export default function WeatherDisplay({ city }: { city: City }){
+    const [weather, setWeather] = useState<WeatherData | null>(null);
 
     const weatherCodeToIcon: Record<number, string> = {
         0: 'sunny',
@@ -31,16 +33,31 @@ export default function WeatherDisplay({ city }: { city: unknown }){
         99: 'storm',
     };
 
-
     useEffect(() => {
         if (!city) return;
 
         const fetchWeather = async () => {
             const res = await fetch(
-                `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true`
+            `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true&hourly=apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation`
             );
             const data = await res.json();
-            setWeather(data.current_weather);
+            console.log('Full weather data:', data);
+
+            // Get latest hourly index (usually index 0 or match current time)
+            const latestIndex = 0;
+
+            const parsed: WeatherData = {
+            temperature: data.current_weather.temperature,
+            weathercode: data.current_weather.weathercode,
+            description: '', // You can map weathercode to description later
+            icon: '', // Optional: map weathercode to icon
+            apparent_temperature: data.hourly.apparent_temperature[latestIndex],
+            relative_humidity_2m: data.hourly.relative_humidity_2m[latestIndex],
+            wind_speed_10m: data.hourly.wind_speed_10m[latestIndex],
+            precipitation: data.hourly.precipitation[latestIndex],
+            };
+
+            setWeather(parsed);
         };
 
         fetchWeather();
@@ -67,9 +84,26 @@ export default function WeatherDisplay({ city }: { city: unknown }){
                             <h2 className='display-1'>{Math.round(weather.temperature)}°</h2>
                         </Col>
                     </Container>
+                    <Container className='px-0 d-flex flex-row align-items-center justify-content-between gap-3'>
+                        <WDItem 
+                            header={'Feels Like'} 
+                            content={`${weather.apparent_temperature}°`}
+                        />
+                        <WDItem 
+                            header={'Humidity'} 
+                            content={`${weather.relative_humidity_2m}%`}
+                        />
+                        <WDItem 
+                            header={'Wind'} 
+                            content={`${weather.wind_speed_10m} km/h`}
+                        />
+                        <WDItem 
+                            header={'Precipitation'} 
+                            content={`${weather.precipitation} mm`}
+                        />
+                    </Container>
                 </Col>
                 <Col lg={4} xs={12}>
-                
                 </Col>
             </Row>
         </Container>
