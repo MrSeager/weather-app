@@ -10,7 +10,7 @@ import { useSpring, animated } from '@react-spring/web';
 
 export default function WDItem({ header, content }: {header: string, content: string}) {
     return (
-        <Container className='border rounded-3'>
+        <Container className='border bg-secondary rounded-3'>
             <h3>{header}</h3>
             <h3>{content}</h3>
         </Container>

@@ -16,3 +16,11 @@ export interface WeatherData {
   wind_speed_10m: number;
   precipitation: number;
 }
+
+export interface DailyForecast {
+  day: string;
+  img: string;
+  imgAlt: string;
+  tmpOne: number; // max temp
+  tmpTwo: number; // min temp
+}
