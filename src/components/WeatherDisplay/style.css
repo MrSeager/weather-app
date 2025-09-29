@@ -14,5 +14,6 @@
 
 /*Buttons*/
 .dropdown-center {
-  left: -50% !important;
+  left: -85% !important;
+  width: 200px !important;
 }

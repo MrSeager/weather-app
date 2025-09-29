@@ -27,7 +27,7 @@ export default function SectionOne({ onSearch }: { onSearch: (cityData: City) =>
     return(
         <Container className="py-5 d-flex flex-column gap-3 align-items-center">
             <h1 className="text-center">How's the sky looking today?</h1>
-            <InputGroup className="w-75">
+            <InputGroup className="w-50">
             <InputGroup.Text className="rounded-start-3 border-end-0 bg-white">
                 <IoIosSearch />
             </InputGroup.Text>

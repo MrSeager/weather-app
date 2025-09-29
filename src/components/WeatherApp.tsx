@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
 //Components
-import type { City } from '@/types/types';
-import Image from 'next/image';
+import type { City, UnitsProps } from '@/types/types';
 import WANav from "@/components/WANav";
 import SectionOne from "@/components/SectionOne";
 import WeatherDisplay from "@/components/WeatherDisplay/WeatherDisplay";
@@ -14,10 +13,19 @@ import { useSpring, animated } from '@react-spring/web';
 
 export default function WeatherApp() {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [unit, setUnit] = useState<UnitsProps>({
+    temperature: 'C',
+    wind: 'km/h',
+    precip: 'mm',
+  });
+
 
   return(
     <Container fluid className="cs-bg-main min-vh-100">
-        <WANav />
+        <WANav 
+          unit={unit}
+          setUnit={setUnit}
+        />
         <SectionOne onSearch={setSelectedCity} />
         {selectedCity && <WeatherDisplay city={selectedCity} />}
     </Container>

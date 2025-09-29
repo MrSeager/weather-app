@@ -2,17 +2,20 @@
 import { useState, useEffect } from 'react';
 //Components
 import Image from 'next/image';
-import type { City, WeatherData, DailyForecast } from '@/types/types';
+import type { City, WeatherData, DailyForecast, HourlyForecast } from '@/types/types';
 import WDItem from '../WDItem';
 import WDItemForecast from '../WDItemForecast';
+import WDHourlyItem from '../WDHourlyItem';
 //Bootstrap
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Dropdown } from 'react-bootstrap';
 //Spring
 import { useSpring, animated } from '@react-spring/web';
 
 export default function WeatherDisplay({ city }: { city: City }){
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [dailyForecasts, setDailyForecasts] = useState<DailyForecast[]>([]);
+    const [groupedHourlyForecasts, setGroupedHourlyForecasts] = useState<Record<string, HourlyForecast[]>>({});
+    const [selectedDay, setSelectedDay] = useState<string>('Monday');
 
     function getWeatherIcon(code: number): string {
         if ([0].includes(code)) return 'sunny';
@@ -26,7 +29,6 @@ export default function WeatherDisplay({ city }: { city: City }){
 
         return 'unknown'; // fallback for unmapped codes
     }
-
 
     useEffect(() => {
         if (!city) return;
@@ -63,19 +65,38 @@ export default function WeatherDisplay({ city }: { city: City }){
                 return { day, img, imgAlt, tmpOne, tmpTwo };
             });
 
-            setDailyForecasts(transformedDaily); // 👈 This is your new state
+            setDailyForecasts(transformedDaily);
+
+            //Hourly forecast
+            const hourlyByDay: Record<string, HourlyForecast[]> = {};
+
+            data.hourly.time.forEach((timestamp: string, index: number) => {
+            const date = new Date(timestamp);
+            const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+            const hour = date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+
+            const temp = Math.round(data.hourly.apparent_temperature[index]);
+            const code = data.hourly.weathercode?.[index] ?? data.current_weather.weathercode;
+            const img = `/images/icon-${getWeatherIcon(code)}.webp`;
+            const imgAlt = `${code}`;
+
+            if (!hourlyByDay[weekday]) hourlyByDay[weekday] = [];
+            hourlyByDay[weekday].push({ time: hour, temp, img, imgAlt });
+            });
+
+            setGroupedHourlyForecasts(hourlyByDay); // new state
+            setSelectedDay(new Date().toLocaleDateString('en-US', { weekday: 'long' })); // default to today
         };
 
         fetchWeather();
     }, [city]);
 
-
     if (!city || !weather) return null;
 
     return(
         <Container>
-            <Row className='pb-5'>
-                <Col lg={8} xs={12} className='d-flex flex-column align-items-center gap-3'>
+            <Row className='pb-5 gap-lg-0 gap-3'>
+                <Col lg={9} xs={12} className='d-flex flex-column align-items-center gap-3'>
                     <Container as={Row} className='cs-bg-image rounded-3 py-5'>
                         <Col xs={6} className='d-flex flex-column align-items-start justify-content-center'>
                             <h2>{city.name}, {city.country}</h2>
@@ -91,23 +112,25 @@ export default function WeatherDisplay({ city }: { city: City }){
                             <h2 className='display-1'>{Math.round(weather.temperature)}°</h2>
                         </Col>
                     </Container>
-                    <Container className='px-0 d-flex flex-row align-items-center justify-content-between gap-3'>
-                        <WDItem 
-                            header={'Feels Like'} 
-                            content={`${weather.apparent_temperature}°`}
-                        />
-                        <WDItem 
-                            header={'Humidity'} 
-                            content={`${weather.relative_humidity_2m}%`}
-                        />
-                        <WDItem 
-                            header={'Wind'} 
-                            content={`${weather.wind_speed_10m} km/h`}
-                        />
-                        <WDItem 
-                            header={'Precipitation'} 
-                            content={`${weather.precipitation} mm`}
-                        />
+                    <Container className='px-0'>
+                        <Row className='px-0 mx-0'>
+                            <WDItem 
+                                header={'Feels Like'} 
+                                content={`${weather.apparent_temperature}°`}
+                            />
+                            <WDItem 
+                                header={'Humidity'} 
+                                content={`${weather.relative_humidity_2m}%`}
+                            />
+                            <WDItem 
+                                header={'Wind'} 
+                                content={`${weather.wind_speed_10m} km/h`}
+                            />
+                            <WDItem 
+                                header={'Precipitation'} 
+                                content={`${weather.precipitation} mm`}
+                            />
+                        </Row>
                     </Container>
                     <Container className='px-0'>
                         <h2 className='h3'>Daily forecast</h2>
@@ -125,7 +148,29 @@ export default function WeatherDisplay({ city }: { city: City }){
                         </Container>
                     </Container>
                 </Col>
-                <Col lg={4} xs={12}>
+                <Col lg={3} xs={12}>
+                    <Container className='h-100 bg-secondary rounded-3 d-flex flex-column align-items-center justify-content-around'>
+                        <Container className='p-0 m-0 d-flex align-items-center justify-content-between'>
+                            <h3 className='h5 m-0'>Hourly forecast</h3>
+                            <Dropdown onSelect={(day) => setSelectedDay(day || 'Monday')}>
+                                <Dropdown.Toggle size='sm'>{selectedDay}</Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {Object.keys(groupedHourlyForecasts).map((day) => (
+                                        <Dropdown.Item key={day} eventKey={day}>{day}</Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Container>
+                        {groupedHourlyForecasts[selectedDay]?.slice(0, 8).map((item, idx) => (
+                            <WDHourlyItem
+                                key={idx}
+                                img={item.img}
+                                imgAlt={item.imgAlt}
+                                time={item.time}
+                                temp={item.temp}
+                            />
+                        ))}
+                    </Container>
                 </Col>
             </Row>
         </Container>

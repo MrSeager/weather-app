@@ -24,3 +24,16 @@ export interface DailyForecast {
   tmpOne: number; // max temp
   tmpTwo: number; // min temp
 }
+
+export interface HourlyForecast {
+  time: string;
+  temp: number;
+  img: string;
+  imgAlt: string;
+}
+
+export interface UnitsProps {
+  temperature: string;
+  wind: string;
+  precip: string;
+}
