@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 //Components
 import Image from 'next/image';
-import type { City, WeatherData, DailyForecast, HourlyForecast } from '@/types/types';
+import type { City, WeatherData, DailyForecast, HourlyForecast, UnitsProps } from '@/types/types';
 import WDItem from '../WDItem';
 import WDItemForecast from '../WDItemForecast';
 import WDHourlyItem from '../WDHourlyItem';
@@ -11,7 +11,12 @@ import { Container, Row, Col, Dropdown } from 'react-bootstrap';
 //Spring
 import { useSpring, animated } from '@react-spring/web';
 
-export default function WeatherDisplay({ city }: { city: City }){
+interface WeatherDisplayProps {
+    unit: UnitsProps;
+    city: City;
+}
+
+export default function WeatherDisplay({ unit, city }: WeatherDisplayProps){
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [dailyForecasts, setDailyForecasts] = useState<DailyForecast[]>([]);
     const [groupedHourlyForecasts, setGroupedHourlyForecasts] = useState<Record<string, HourlyForecast[]>>({});
@@ -93,6 +98,13 @@ export default function WeatherDisplay({ city }: { city: City }){
 
     if (!city || !weather) return null;
 
+    //Conversion to F
+    const celsiusToFahrenheit = (c: number) => Math.round((c * 9) / 5 + 32);
+    //Conversion to mph
+    const kmhToMph = (kmh: number) => Math.round(kmh / 1.60934);
+    //Conversion to in
+    const mmToInches = (mm: number) => (mm / 25.4).toFixed(2);
+
     return(
         <Container>
             <Row className='pb-5 gap-lg-0 gap-3'>
@@ -100,7 +112,14 @@ export default function WeatherDisplay({ city }: { city: City }){
                     <Container as={Row} className='cs-bg-image rounded-3 py-5'>
                         <Col xs={6} className='d-flex flex-column align-items-start justify-content-center'>
                             <h2>{city.name}, {city.country}</h2>
-                            <p>{new Date().toLocaleDateString()}</p>
+                            <p>  
+                                {new Date().toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                })}
+                            </p>
                         </Col>
                         <Col xs={6} className='d-flex flex-row align-items-center justify-content-end'>
                             <Image
@@ -109,14 +128,22 @@ export default function WeatherDisplay({ city }: { city: City }){
                                 width={75}
                                 height={75}
                             />
-                            <h2 className='display-1'>{Math.round(weather.temperature)}°</h2>
+                            <h2 className='display-1'>
+                                {unit.temperature === 'C'
+                                    ? Math.round(weather.temperature)
+                                    : celsiusToFahrenheit(weather.temperature)
+                                }°
+                            </h2>
                         </Col>
                     </Container>
                     <Container className='px-0'>
                         <Row className='px-0 mx-0'>
                             <WDItem 
                                 header={'Feels Like'} 
-                                content={`${weather.apparent_temperature}°`}
+                                content={`${unit.temperature === 'C'
+                                    ? weather.apparent_temperature
+                                    : celsiusToFahrenheit(weather.apparent_temperature)
+                                }°`}
                             />
                             <WDItem 
                                 header={'Humidity'} 
@@ -124,11 +151,17 @@ export default function WeatherDisplay({ city }: { city: City }){
                             />
                             <WDItem 
                                 header={'Wind'} 
-                                content={`${weather.wind_speed_10m} km/h`}
+                                content={`${unit.wind === 'km/h'
+                                    ? weather.wind_speed_10m
+                                    : kmhToMph(weather.wind_speed_10m)
+                                } ${unit.wind}`}
                             />
                             <WDItem 
                                 header={'Precipitation'} 
-                                content={`${weather.precipitation} mm`}
+                                content={`${unit.precip === 'mm'
+                                    ? weather.precipitation
+                                    : mmToInches(weather.precipitation)
+                                } ${unit.precip}`}
                             />
                         </Row>
                     </Container>
@@ -141,8 +174,14 @@ export default function WeatherDisplay({ city }: { city: City }){
                                     day={forecast.day}
                                     img={forecast.img}
                                     imgAlt={forecast.imgAlt}
-                                    tmpOne={forecast.tmpOne}
-                                    tmpTwo={forecast.tmpTwo}
+                                    tmpOne={unit.temperature === 'C'
+                                        ? forecast.tmpOne
+                                        : celsiusToFahrenheit(forecast.tmpOne)
+                                    }
+                                    tmpTwo={unit.temperature === 'C'
+                                        ? forecast.tmpTwo
+                                        : celsiusToFahrenheit(forecast.tmpTwo)
+                                    }
                                 />
                             ))}
                         </Container>
@@ -167,7 +206,10 @@ export default function WeatherDisplay({ city }: { city: City }){
                                 img={item.img}
                                 imgAlt={item.imgAlt}
                                 time={item.time}
-                                temp={item.temp}
+                                temp={unit.temperature === 'C'
+                                    ? item.temp
+                                    : celsiusToFahrenheit(item.temp)
+                                }
                             />
                         ))}
                     </Container>

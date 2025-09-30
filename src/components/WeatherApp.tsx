@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 //Components
 import type { City, UnitsProps } from '@/types/types';
 import WANav from "@/components/WANav";
@@ -13,12 +13,30 @@ import { useSpring, animated } from '@react-spring/web';
 
 export default function WeatherApp() {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
-  const [unit, setUnit] = useState<UnitsProps>({
+  const defaultUnits: UnitsProps = {
     temperature: 'C',
     wind: 'km/h',
     precip: 'mm',
-  });
+  };
 
+  const [unit, setUnit] = useState<UnitsProps>(defaultUnits);
+
+  // Load from localStorage once on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('weatherUnits');
+      if (saved) {
+        setUnit(JSON.parse(saved));
+      }
+    }
+  }, []);
+
+  // Save to localStorage whenever unit changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('weatherUnits', JSON.stringify(unit));
+    }
+  }, [unit]);
 
   return(
     <Container fluid className="cs-bg-main min-vh-100">
@@ -27,7 +45,7 @@ export default function WeatherApp() {
           setUnit={setUnit}
         />
         <SectionOne onSearch={setSelectedCity} />
-        {selectedCity && <WeatherDisplay city={selectedCity} />}
+        {selectedCity && <WeatherDisplay unit={unit} city={selectedCity} />}
     </Container>
   );
 }

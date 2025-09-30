@@ -12,6 +12,19 @@ interface WANavProps {
 }
 
 export default function WANav({ unit, setUnit }: WANavProps) {
+    const HandleSwitchUnits = () => {
+        const isMetric =
+            unit.temperature === 'C' &&
+            unit.wind === 'km/h' &&
+            unit.precip === 'mm';
+
+        setUnit({
+            temperature: isMetric ? 'F' : 'C',
+            wind: isMetric ? 'mph' : 'km/h',
+            precip: isMetric ? 'in' : 'mm',
+        });
+    };
+
     return(
         <Navbar>
             <Container>
@@ -28,7 +41,7 @@ export default function WANav({ unit, setUnit }: WANavProps) {
                         <IoSettingsOutline /> Units
                     </Dropdown.Toggle>
                       <Dropdown.Menu className="dropdown-center px-0">
-                        <Dropdown.Item>Switch to Imperial</Dropdown.Item>
+                        <Dropdown.Item onClick={HandleSwitchUnits}>Switch to Imperial</Dropdown.Item>
                         <Dropdown.ItemText>Temperature</Dropdown.ItemText>
                         <Form.Check type="radio" id="tempC" className="px-3 d-flex justify-content-between align-items-center">
                             <Form.Check.Label htmlFor="tempC" className="ms-0">
