@@ -6,17 +6,20 @@ import type { City, WeatherData, DailyForecast, HourlyForecast, UnitsProps } fro
 import WDItem from '../WDItem';
 import WDItemForecast from '../WDItemForecast';
 import WDHourlyItem from '../WDHourlyItem';
+import { DateTime } from 'luxon';
 //Bootstrap
 import { Container, Row, Col, Dropdown } from 'react-bootstrap';
 //Spring
 import { useSpring, animated } from '@react-spring/web';
 
 interface WeatherDisplayProps {
+    setBgColor: (bgColor: string) => void; 
+    interpolateColor: (hour: number) => string;
     unit: UnitsProps;
     city: City;
 }
 
-export default function WeatherDisplay({ unit, city }: WeatherDisplayProps){
+export default function WeatherDisplay({ setBgColor, interpolateColor, unit, city }: WeatherDisplayProps){
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [dailyForecasts, setDailyForecasts] = useState<DailyForecast[]>([]);
     const [groupedHourlyForecasts, setGroupedHourlyForecasts] = useState<Record<string, HourlyForecast[]>>({});
@@ -43,7 +46,12 @@ export default function WeatherDisplay({ unit, city }: WeatherDisplayProps){
             `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current_weather=true&hourly=apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`
             );
             const data = await res.json();
-            console.log('Full weather data:', data);
+            const localHour = DateTime.fromISO(data.current_weather.time, { zone: data.timezone }).hour;
+            setBgColor(interpolateColor(localHour));
+
+            console.log('Current weather time:', data.current_weather.time);
+            console.log('Local hour:', localHour);
+            console.log('Interpolated color:', interpolateColor(localHour));
 
             // Parse current weather
             const latestIndex = 0;

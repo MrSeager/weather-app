@@ -26,7 +26,7 @@ export default function WANav({ unit, setUnit }: WANavProps) {
     };
 
     return(
-        <Navbar>
+        <Navbar className='w-100'>
             <Container>
                 <Navbar.Brand href='#home'>
                     <Image

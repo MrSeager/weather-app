@@ -11,6 +11,8 @@
   "dependencies": {
     "@react-spring/web": "^10.0.3",
     "bootstrap": "^5.3.8",
+    "lodash.debounce": "^4.0.8",
+    "luxon": "^3.7.2",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-bootstrap": "^2.10.10",
@@ -19,6 +21,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

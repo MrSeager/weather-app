@@ -18,6 +18,7 @@ export default function WeatherApp() {
     wind: 'km/h',
     precip: 'mm',
   };
+  const [bgColor, setBgColor] = useState<string>('hsl(243, 96%, 9%)');
 
   const [unit, setUnit] = useState<UnitsProps>(defaultUnits);
 
@@ -38,14 +39,35 @@ export default function WeatherApp() {
     }
   }, [unit]);
 
+  function interpolateColor(hour: number): string {
+    const t = hour <= 12 ? hour / 12 : (24 - hour) / 12;
+
+    const h = 243; // fixed hue
+    const s = Math.round(96 + (0 - 96) * t); // fade saturation
+    const l = Math.round(9 + (100 - 9) * t); // brighten
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
+  }
+
+  const springBG = useSpring({
+    backgroundColor: bgColor,
+    config: { duration: 1000 },
+  });
+
   return(
-    <Container fluid className="cs-bg-main min-vh-100">
+    <animated.div style={springBG} className="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-center">
         <WANav 
           unit={unit}
           setUnit={setUnit}
         />
         <SectionOne onSearch={setSelectedCity} />
-        {selectedCity && <WeatherDisplay unit={unit} city={selectedCity} />}
-    </Container>
+        {selectedCity && 
+          <WeatherDisplay 
+            setBgColor={setBgColor} 
+            interpolateColor={interpolateColor} 
+            unit={unit} 
+            city={selectedCity} 
+          />}
+    </animated.div>
   );
 }
