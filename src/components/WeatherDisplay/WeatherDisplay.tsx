@@ -24,7 +24,8 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
     const [dailyForecasts, setDailyForecasts] = useState<DailyForecast[]>([]);
     const [groupedHourlyForecasts, setGroupedHourlyForecasts] = useState<Record<string, HourlyForecast[]>>({});
     const [selectedDay, setSelectedDay] = useState<string>('Monday');
-
+    const [isLoading, setIsLoading] = useState(true);
+    
     function getWeatherIcon(code: number): string {
         if ([0].includes(code)) return 'sunny';
         if ([1, 2].includes(code)) return 'partly-cloudy';
@@ -49,10 +50,6 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
             const localHour = DateTime.fromISO(data.current_weather.time, { zone: data.timezone }).hour;
             setBgColor(interpolateColor(localHour));
 
-            console.log('Current weather time:', data.current_weather.time);
-            console.log('Local hour:', localHour);
-            console.log('Interpolated color:', interpolateColor(localHour));
-
             // Parse current weather
             const latestIndex = 0;
             const parsed: WeatherData = {
@@ -67,7 +64,7 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
             };
             setWeather(parsed);
 
-            // ✅ Transform daily forecast
+            // Transform daily forecast
             const transformedDaily = data.daily.time.map((date: string, index: number) => {
                 const day = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
                 const imgAlt = `${data.daily.weathercode[index]}`;
@@ -80,21 +77,25 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
 
             setDailyForecasts(transformedDaily);
 
-            //Hourly forecast
+            // Hourly forecast
             const hourlyByDay: Record<string, HourlyForecast[]> = {};
+            const now = DateTime.now().setZone(data.timezone);
+            const currentHour = now.hour; // e.g., 11
 
             data.hourly.time.forEach((timestamp: string, index: number) => {
-            const date = new Date(timestamp);
-            const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
-            const hour = date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+                const dt = DateTime.fromISO(timestamp, { zone: data.timezone });
+                if (dt.hour < currentHour) return; // skip hours before current city hour
 
-            const temp = Math.round(data.hourly.apparent_temperature[index]);
-            const code = data.hourly.weathercode?.[index] ?? data.current_weather.weathercode;
-            const img = `/images/icon-${getWeatherIcon(code)}.webp`;
-            const imgAlt = `${code}`;
+                const weekday = dt.toFormat('cccc'); // e.g., "Friday"
+                const hour = dt.toFormat('h a');     // e.g., "1 PM"
 
-            if (!hourlyByDay[weekday]) hourlyByDay[weekday] = [];
-            hourlyByDay[weekday].push({ time: hour, temp, img, imgAlt });
+                const temp = Math.round(data.hourly.apparent_temperature[index]);
+                const code = data.hourly.weathercode?.[index] ?? data.current_weather.weathercode;
+                const img = `/images/icon-${getWeatherIcon(code)}.webp`;
+                const imgAlt = `${code}`;
+
+                if (!hourlyByDay[weekday]) hourlyByDay[weekday] = [];
+                hourlyByDay[weekday].push({ time: hour, temp, img, imgAlt });
             });
 
             setGroupedHourlyForecasts(hourlyByDay); // new state

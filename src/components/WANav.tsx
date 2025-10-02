@@ -5,6 +5,7 @@ import type { UnitsProps } from '@/types/types';
 import { Container, Dropdown, Navbar, Form } from 'react-bootstrap';
 //Icons
 import { IoSettingsOutline } from "react-icons/io5";
+import { FaCheck } from "react-icons/fa6";
 
 interface WANavProps {
     unit: UnitsProps;
@@ -37,19 +38,20 @@ export default function WANav({ unit, setUnit }: WANavProps) {
                     />
                 </Navbar.Brand>
                 <Dropdown>
-                    <Dropdown.Toggle className='d-flex flex-row align-items-center gap-2'>
-                        <IoSettingsOutline /> Units
+                    <Dropdown.Toggle className='cs-bg-sec border-0 py-2 px-3 d-flex flex-row align-items-center gap-2'>
+                        <IoSettingsOutline className='fw-bold' /> Units
                     </Dropdown.Toggle>
-                      <Dropdown.Menu className="dropdown-center px-0">
-                        <Dropdown.Item onClick={HandleSwitchUnits}>Switch to Imperial</Dropdown.Item>
-                        <Dropdown.ItemText>Temperature</Dropdown.ItemText>
+                      <Dropdown.Menu className="dropdown-menu-end cs-dropdown-menu cs-bg-sec text-white px-0 mt-2">
+                        <Dropdown.Item onClick={HandleSwitchUnits} className='text-white'>Switch to Imperial</Dropdown.Item>
+                        <Dropdown.ItemText className='text-white'>Temperature</Dropdown.ItemText>
                         <Form.Check type="radio" id="tempC" className="px-3 d-flex justify-content-between align-items-center">
                             <Form.Check.Label htmlFor="tempC" className="ms-0">
                                 Celsius (°C)
                             </Form.Check.Label>
                             <Form.Check.Input 
                                 type="radio" 
-                                name="temperature" 
+                                name="temperature"
+                                className='cs-radio bg-transparent border-0 shadow-none'
                                 checked={unit.temperature === 'C'} 
                                 onChange={() => setUnit({ ...unit, temperature: 'C' })}
                             />
@@ -60,21 +62,23 @@ export default function WANav({ unit, setUnit }: WANavProps) {
                             </Form.Check.Label>
                             <Form.Check.Input 
                                 type="radio" 
-                                name="temperature" 
+                                name="temperature"
+                                className='cs-radio bg-transparent border-0 shadow-none'
                                 checked={unit.temperature === 'F'} 
                                 onChange={() => setUnit({ ...unit, temperature: 'F' })}
                             />
                         </Form.Check>
-                        <Dropdown.Divider />
+                        <Dropdown.Divider className='bg-white mx-3' />
 
-                        <Dropdown.ItemText>Wind Speed</Dropdown.ItemText>
+                        <Dropdown.ItemText className='text-white'>Wind Speed</Dropdown.ItemText>
                         <Form.Check type="radio" id="tempC" className="px-3 d-flex justify-content-between align-items-center">
                             <Form.Check.Label htmlFor="tempC" className="ms-0">
                                 km/h
                             </Form.Check.Label>
                             <Form.Check.Input 
                                 type="radio" 
-                                name="wind" 
+                                name="wind"
+                                className='cs-radio bg-transparent border-0 shadow-none'
                                 checked={unit.wind === 'km/h'} 
                                 onChange={() => setUnit({ ...unit, wind: 'km/h' })}
                             />
@@ -85,21 +89,23 @@ export default function WANav({ unit, setUnit }: WANavProps) {
                             </Form.Check.Label>
                             <Form.Check.Input 
                                 type="radio" 
-                                name="wind" 
+                                name="wind"
+                                className='cs-radio bg-transparent border-0 shadow-none'
                                 checked={unit.wind === 'mph'} 
                                 onChange={() => setUnit({ ...unit, wind: 'mph' })}
                             />
                         </Form.Check>
-                        <Dropdown.Divider />
+                        <Dropdown.Divider className='bg-white mx-3' />
 
-                        <Dropdown.ItemText>Precipitation</Dropdown.ItemText>
+                        <Dropdown.ItemText className='text-white'>Precipitation</Dropdown.ItemText>
                         <Form.Check type="radio" id="tempC" className="px-3 d-flex justify-content-between align-items-center">
                             <Form.Check.Label htmlFor="tempC" className="ms-0">
                                 Millimeters (mm)
                             </Form.Check.Label>
                             <Form.Check.Input 
                                 type="radio" 
-                                name="precip" 
+                                name="precip"
+                                className='cs-radio bg-transparent border-0 shadow-none'
                                 checked={unit.precip === 'mm'} 
                                 onChange={() => setUnit({ ...unit, precip: 'mm' })}
                             />
@@ -110,7 +116,8 @@ export default function WANav({ unit, setUnit }: WANavProps) {
                             </Form.Check.Label>
                             <Form.Check.Input 
                                 type="radio" 
-                                name="precip" 
+                                name="precip"
+                                className='cs-radio bg-transparent border-0 shadow-none'
                                 checked={unit.precip === 'in'} 
                                 onChange={() => setUnit({ ...unit, precip: 'in' })}
                             />

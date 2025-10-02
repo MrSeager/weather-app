@@ -7,7 +7,7 @@ import SectionOne from "@/components/SectionOne";
 import WeatherDisplay from "@/components/WeatherDisplay/WeatherDisplay";
 //Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container } from 'react-bootstrap';
+import { Container, Placeholder } from 'react-bootstrap';
 //Spring
 import { useSpring, animated } from '@react-spring/web';
 
@@ -18,8 +18,7 @@ export default function WeatherApp() {
     wind: 'km/h',
     precip: 'mm',
   };
-  const [bgColor, setBgColor] = useState<string>('hsl(243, 96%, 9%)');
-
+  const [bgColor, setBgColor] = useState<string>('rgba(3, 1, 45, 1)');
   const [unit, setUnit] = useState<UnitsProps>(defaultUnits);
 
   // Load from localStorage once on mount
@@ -39,14 +38,11 @@ export default function WeatherApp() {
     }
   }, [unit]);
 
+  //Background color 
   function interpolateColor(hour: number): string {
-    const t = hour <= 12 ? hour / 12 : (24 - hour) / 12;
-
-    const h = 243; // fixed hue
-    const s = Math.round(96 + (0 - 96) * t); // fade saturation
-    const l = Math.round(9 + (100 - 9) * t); // brighten
-
-    return `hsl(${h}, ${s}%, ${l}%)`;
+    const t = hour <= 12 ? (12 - hour) / 12 : (hour - 12) / 12;
+    const a = 0.1 + (1 * t);
+    return `rgba(20, 30, 60, ${a})`;
   }
 
   const springBG = useSpring({
@@ -55,19 +51,20 @@ export default function WeatherApp() {
   });
 
   return(
-    <animated.div style={springBG} className="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-center">
+    <animated.div style={springBG} className="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start text-white">
         <WANav 
           unit={unit}
           setUnit={setUnit}
         />
         <SectionOne onSearch={setSelectedCity} />
-        {selectedCity && 
-          <WeatherDisplay 
+        {selectedCity && (
+          <WeatherDisplay
             setBgColor={setBgColor} 
             interpolateColor={interpolateColor} 
             unit={unit} 
             city={selectedCity} 
-          />}
+          />
+        )}
     </animated.div>
   );
 }

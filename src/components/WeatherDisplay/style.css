@@ -1,8 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;600;700&display=swap');
 
+body {
+  font-family: 'DM Sans', sans-serif !important;
+  background-color: white !important;
+}
+
+.cs-transition {
+  transition: .5s !important;
+}
 
 /*Background*/
 .cs-bg-main {
     background-color: hsl(243, 96%, 9%) !important;
+}
+
+.cs-bg-sec {
+  background-color: hsl(243, 27%, 20%) !important;
 }
 
 .cs-bg-image {
@@ -13,7 +26,16 @@
 }
 
 /*Buttons*/
-.dropdown-center {
-  left: -85% !important;
-  width: 200px !important;
+.cs-dropdown-menu {
+  min-width: 200px !important;
+}
+
+.form-check-input[type="radio"] {
+  background-size: 16px 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-check-input:checked[type="radio"] {
+  --bs-form-check-bg-image: url('/images/icon-checkmark.svg') !important; /* your custom image */
 }
