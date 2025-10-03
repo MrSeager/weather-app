@@ -41,7 +41,7 @@ export default function WeatherApp() {
   //Background color 
   function interpolateColor(hour: number): string {
     const t = hour <= 12 ? (12 - hour) / 12 : (hour - 12) / 12;
-    const a = 0.1 + (1 * t);
+    const a = 0.2 + (1 * t);
     return `rgba(20, 30, 60, ${a})`;
   }
 
@@ -51,7 +51,7 @@ export default function WeatherApp() {
   });
 
   return(
-    <animated.div style={springBG} className="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start text-white">
+    <animated.div style={springBG} className="user-select-none container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start text-white">
         <WANav 
           unit={unit}
           setUnit={setUnit}

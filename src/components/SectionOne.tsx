@@ -49,37 +49,40 @@ export default function SectionOne({ onSearch }: { onSearch: (cityData: City) =>
     }
     
     return(
-        <Container className="py-5 d-flex flex-column gap-3 align-items-center">
-            <h1 className="text-center">How's the sky looking today?</h1>
-            <InputGroup className="w-50">
-            <InputGroup.Text className="rounded-start-3 border-end-0 bg-white">
-                <IoIosSearch />
-            </InputGroup.Text>
-            <Form.Control 
-                className="rounded-end-3 me-2 border-start-0 shadow-none"
-                placeholder="Search for a place..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setTimeout(() => setIsFocused(false), 100)}
-            />
-            {isFocused && query.length > 0 && suggestions.length > 0 && (
-                <ListGroup className="position-absolute mt-2 rounded-3 top-100 start-0 w-100 z-3 shadow-sm">
-                    {suggestions.map((city, idx) => (
-                        <ListGroup.Item
-                            key={idx}
-                            action
-                            onClick={() => handleSelect(city)}
-                            className="cursor-pointer"
-                        >
-                            {city.name}, {city.country}
-                        </ListGroup.Item>
-                    ))}
-                </ListGroup>
-            )}
-            <Button className="rounded-3" onClick={handleSearch}>
-                Search
-            </Button>
+        <Container className="py-4 d-flex flex-column gap-4 align-items-center">
+            <h1 className="text-center cs-f-bg">How's the sky looking today?</h1>
+            <InputGroup className="cs-w cs-hover-form-control gap-3">
+                <div className={`rounded-3 px-0 d-flex flex-row cs-input-wrapper ${isFocused ? 'focused' : ''}`}>
+                    <InputGroup.Text className="cs-fc-item cs-bg-sec pe-0 rounded-start-3 rounded-end-0 border-0 text-white">
+                        <IoIosSearch size={25} />
+                    </InputGroup.Text>
+                    <Form.Control 
+                        className="cs-bg-sec rounded-end-3 rounded-start-0 border-0 shadow-none text-white cs-form-control py-2"
+                        placeholder="Search for a place..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setTimeout(() => setIsFocused(false), 100)}
+                    />
+                    {isFocused && query.length > 0 && suggestions.length > 0 && (
+                        <ListGroup className="cs-bg-sec p-2 gap-2 position-absolute mt-2 rounded-3 top-100 start-0 w-100 z-3 shadow-sm">
+                            {suggestions.map((city, idx) => (
+                                <ListGroup.Item
+                                    key={idx}
+                                    action
+                                    onClick={() => handleSelect(city)}
+                                    className="cursor-pointer bg-transparent border-1 rounded-3 cs-list-item text-white cs-transition"
+                                >
+                                    {city.name}, {city.country}
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    )}
+                </div>
+                
+                <Button className="rounded-3 px-3 cs-btn-sec cs-transition border-0" onClick={handleSearch}>
+                    Search
+                </Button>
             </InputGroup>
         </Container>
     );

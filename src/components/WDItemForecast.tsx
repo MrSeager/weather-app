@@ -10,7 +10,7 @@ import { useSpring, animated } from '@react-spring/web';
 
 export default function WDItemForecast({ day, img, imgAlt, tmpOne, tmpTwo }: DailyForecast) {
     return (
-        <Container className='border bg-secondary py-2 rounded-3 d-flex flex-column align-items-center'>
+        <Container className='forecast-item border border-secondary cs-bg-sec py-2 rounded-3 d-flex flex-column align-items-center'>
             <h3 className='h5'>{day}</h3>
             <Image
                 src={img}

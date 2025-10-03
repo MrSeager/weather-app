@@ -3,6 +3,12 @@ import { useState, useEffect } from 'react';
 //Components
 import Image from 'next/image';
 import type { City, WeatherData, DailyForecast, HourlyForecast, UnitsProps } from '@/types/types';
+
+import WDMainSection from './WDMainSection';
+import WDDetailsSection from './WDDetailsSection';
+import WDDailySection from './WDDailySection';
+import WDHourlySection from './WDHourlySection';
+
 import WDItem from '../WDItem';
 import WDItemForecast from '../WDItemForecast';
 import WDHourlyItem from '../WDHourlyItem';
@@ -24,7 +30,6 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
     const [dailyForecasts, setDailyForecasts] = useState<DailyForecast[]>([]);
     const [groupedHourlyForecasts, setGroupedHourlyForecasts] = useState<Record<string, HourlyForecast[]>>({});
     const [selectedDay, setSelectedDay] = useState<string>('Monday');
-    const [isLoading, setIsLoading] = useState(true);
     
     function getWeatherIcon(code: number): string {
         if ([0].includes(code)) return 'sunny';
@@ -118,110 +123,37 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
         <Container>
             <Row className='pb-5 gap-lg-0 gap-3'>
                 <Col lg={9} xs={12} className='d-flex flex-column align-items-center gap-3'>
-                    <Container as={Row} className='cs-bg-image rounded-3 py-5'>
-                        <Col xs={6} className='d-flex flex-column align-items-start justify-content-center'>
-                            <h2>{city.name}, {city.country}</h2>
-                            <p>  
-                                {new Date().toLocaleDateString('en-US', {
-                                    weekday: 'long',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                })}
-                            </p>
-                        </Col>
-                        <Col xs={6} className='d-flex flex-row align-items-center justify-content-end'>
-                            <Image
-                                src={`/images/icon-${getWeatherIcon(weather.weathercode)}.webp`}
-                                alt={`${weather.weathercode}`}
-                                width={75}
-                                height={75}
-                            />
-                            <h2 className='display-1'>
-                                {unit.temperature === 'C'
-                                    ? Math.round(weather.temperature)
-                                    : celsiusToFahrenheit(weather.temperature)
-                                }°
-                            </h2>
-                        </Col>
-                    </Container>
-                    <Container className='px-0'>
-                        <Row className='px-0 mx-0'>
-                            <WDItem 
-                                header={'Feels Like'} 
-                                content={`${unit.temperature === 'C'
-                                    ? weather.apparent_temperature
-                                    : celsiusToFahrenheit(weather.apparent_temperature)
-                                }°`}
-                            />
-                            <WDItem 
-                                header={'Humidity'} 
-                                content={`${weather.relative_humidity_2m}%`}
-                            />
-                            <WDItem 
-                                header={'Wind'} 
-                                content={`${unit.wind === 'km/h'
-                                    ? weather.wind_speed_10m
-                                    : kmhToMph(weather.wind_speed_10m)
-                                } ${unit.wind}`}
-                            />
-                            <WDItem 
-                                header={'Precipitation'} 
-                                content={`${unit.precip === 'mm'
-                                    ? weather.precipitation
-                                    : mmToInches(weather.precipitation)
-                                } ${unit.precip}`}
-                            />
-                        </Row>
-                    </Container>
-                    <Container className='px-0'>
-                        <h2 className='h3'>Daily forecast</h2>
-                        <Container className='px-0 d-flex align-items-center justify-content-between gap-3'>
-                            {dailyForecasts.map((forecast, idx) => (
-                                <WDItemForecast
-                                    key={idx}
-                                    day={forecast.day}
-                                    img={forecast.img}
-                                    imgAlt={forecast.imgAlt}
-                                    tmpOne={unit.temperature === 'C'
-                                        ? forecast.tmpOne
-                                        : celsiusToFahrenheit(forecast.tmpOne)
-                                    }
-                                    tmpTwo={unit.temperature === 'C'
-                                        ? forecast.tmpTwo
-                                        : celsiusToFahrenheit(forecast.tmpTwo)
-                                    }
-                                />
-                            ))}
-                        </Container>
-                    </Container>
+                    <WDMainSection 
+                        city={city} 
+                        weather={weather}
+                        getWeatherIcon={getWeatherIcon} 
+                        unit={unit} 
+                        celsiusToFahrenheit={celsiusToFahrenheit}
+                    />
+
+                    <WDDetailsSection 
+                        unit={unit} 
+                        weather={weather}
+                        celsiusToFahrenheit={celsiusToFahrenheit}
+                        kmhToMph={kmhToMph}
+                        mmToInches={mmToInches}
+                    />
+
+                    <WDDailySection 
+                        dailyForecasts={dailyForecasts} 
+                        unit={unit} 
+                        celsiusToFahrenheit={celsiusToFahrenheit}
+                    />
+
                 </Col>
                 <Col lg={3} xs={12}>
-                    <Container className='h-100 bg-secondary rounded-3 d-flex flex-column align-items-center justify-content-around'>
-                        <Container className='p-0 m-0 d-flex align-items-center justify-content-between'>
-                            <h3 className='h5 m-0'>Hourly forecast</h3>
-                            <Dropdown onSelect={(day) => setSelectedDay(day || 'Monday')}>
-                                <Dropdown.Toggle size='sm'>{selectedDay}</Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {Object.keys(groupedHourlyForecasts).map((day) => (
-                                        <Dropdown.Item key={day} eventKey={day}>{day}</Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Container>
-                        {groupedHourlyForecasts[selectedDay]?.slice(0, 8).map((item, idx) => (
-                            <WDHourlyItem
-                                key={idx}
-                                img={item.img}
-                                imgAlt={item.imgAlt}
-                                time={item.time}
-                                temp={unit.temperature === 'C'
-                                    ? item.temp
-                                    : celsiusToFahrenheit(item.temp)
-                                }
-                            />
-                        ))}
-                    </Container>
+                    <WDHourlySection 
+                        selectedDay={selectedDay}
+                        setSelectedDay={setSelectedDay}
+                        groupedHourlyForecasts={groupedHourlyForecasts}
+                        unit={unit}
+                        celsiusToFahrenheit={celsiusToFahrenheit}
+                    />
                 </Col>
             </Row>
         </Container>

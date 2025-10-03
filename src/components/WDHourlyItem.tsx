@@ -9,7 +9,7 @@ import { useSpring, animated } from '@react-spring/web';
 
 export default function WDHourlyItem({ img, imgAlt, time, temp }: HourlyForecast) {
     return(
-        <Container className='d-flex align-items-center border'>
+        <Container className='d-flex align-items-center cs-bg-thr border border-secondary rounded-3 py-2 px-2'>
             <Image 
                 src={img}
                 alt={imgAlt}
