@@ -1,21 +1,8 @@
-"use client";
-import { useState, useEffect } from 'react';
 //Components
-import Image from 'next/image';
-import type { City, WeatherData, DailyForecast, HourlyForecast, UnitsProps } from '@/types/types';
-
-import WDMainSection from './WDMainSection';
-import WDDetailsSection from './WDDetailsSection';
-import WDDailySection from './WDDailySection';
-
-import WDItem from '../WDItem';
-import WDItemForecast from '../WDItemForecast';
+import type { HourlyForecast, UnitsProps } from '@/types/types';
 import WDHourlyItem from '../WDHourlyItem';
-import { DateTime } from 'luxon';
 //Bootstrap
-import { Container, Row, Col, Dropdown } from 'react-bootstrap';
-//Spring
-import { useSpring, animated } from '@react-spring/web';
+import { Container, Dropdown } from 'react-bootstrap';
 
 interface WDHourlySectionProps {
     selectedDay: string;

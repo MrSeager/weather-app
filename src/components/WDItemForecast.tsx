@@ -1,16 +1,26 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 //Components
 import Image from 'next/image';
 import type { DailyForecast } from '@/types/types';
+import { useHover } from './anim';
 //Bootstrap
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 //Spring
-import { useSpring, animated } from '@react-spring/web';
+import { animated } from '@react-spring/web';
 
 export default function WDItemForecast({ day, img, imgAlt, tmpOne, tmpTwo }: DailyForecast) {
+    const [hovered, setHovered] = useState<boolean>(false);
+
+    const hoverAnim = useHover(hovered, 1.07);
+    
     return (
-        <Container className='forecast-item border border-secondary cs-bg-sec py-2 rounded-3 d-flex flex-column align-items-center'>
+        <animated.div 
+            style={hoverAnim}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className='container forecast-item border border-secondary cs-bg-sec py-2 rounded-3 d-flex flex-column align-items-center'
+        >
             <h3 className='h5'>{day}</h3>
             <Image
                 src={img}
@@ -22,6 +32,6 @@ export default function WDItemForecast({ day, img, imgAlt, tmpOne, tmpTwo }: Dai
                 <h3 className='h5'>{tmpOne}°</h3>
                 <h3 className='h5'>{tmpTwo}°</h3>
             </Container>
-        </Container>
+        </animated.div>
     );
 }

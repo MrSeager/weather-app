@@ -1,16 +1,13 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 //Components
 import Image from 'next/image';
-import type { City, WeatherData, DailyForecast, HourlyForecast, UnitsProps } from '@/types/types';
-import WDItem from '../WDItem';
-import WDItemForecast from '../WDItemForecast';
-import WDHourlyItem from '../WDHourlyItem';
-import { DateTime } from 'luxon';
+import type { City, WeatherData, UnitsProps } from '@/types/types';
+import { useHover } from '../anim';
 //Bootstrap
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 //Spring
-import { useSpring, animated } from '@react-spring/web';
+import { animated } from '@react-spring/web';
 
 interface WDMainSectionProps {
     city: City;
@@ -21,8 +18,16 @@ interface WDMainSectionProps {
 }
 
 export default function WDMainSection ({ city, weather, getWeatherIcon, unit, celsiusToFahrenheit }: WDMainSectionProps) {
+    const [hovered, setHovered] = useState<boolean>(false);
+
+    const hoverAnim = useHover(hovered, 1.03);
+
     return (
-        <Container className='px-3'>
+        <animated.div 
+            style={hoverAnim}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)} 
+            className='container px-3'>
             <Row className='cs-bg-image rounded-3 py-5 px-3'>
                 <Col xs={6} className='d-flex flex-column align-items-start justify-content-center'>
                     <h2 className='h3 fw-bold'>{city.name}, {city.country}</h2>
@@ -50,6 +55,6 @@ export default function WDMainSection ({ city, weather, getWeatherIcon, unit, ce
                     </h2>
                 </Col>
             </Row>
-        </Container>
+        </animated.div>
     );
 }

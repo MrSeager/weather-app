@@ -7,7 +7,6 @@ import SectionOne from "@/components/SectionOne";
 import WeatherDisplay from "@/components/WeatherDisplay/WeatherDisplay";
 //Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Placeholder } from 'react-bootstrap';
 //Spring
 import { useSpring, animated } from '@react-spring/web';
 
@@ -38,6 +37,23 @@ export default function WeatherApp() {
     }
   }, [unit]);
 
+  useEffect(() => {
+    if (selectedCity) {
+      localStorage.setItem('lastSelectedCity', JSON.stringify(selectedCity));
+    }
+  }, [selectedCity]);
+
+  useEffect(() => {
+    const savedCity = localStorage.getItem('lastSelectedCity');
+    if (savedCity) {
+      try {
+        setSelectedCity(JSON.parse(savedCity));
+      } catch (err) {
+        console.error('Failed to parse saved city:', err);
+      }
+    }
+  }, []);
+
   //Background color 
   function interpolateColor(hour: number): string {
     const t = hour <= 12 ? (12 - hour) / 12 : (hour - 12) / 12;
@@ -50,11 +66,18 @@ export default function WeatherApp() {
     config: { duration: 1000 },
   });
 
+  //Clear and reload page
+  const handleClearCity = () => {
+    localStorage.removeItem('lastSelectedCity');
+    setSelectedCity(null);
+  };
+
   return(
-    <animated.div style={springBG} className="user-select-none container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start text-white">
+    <animated.div style={springBG} className="overflow-hidden user-select-none container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start text-white">
         <WANav 
           unit={unit}
           setUnit={setUnit}
+          handleClearCity={handleClearCity}
         />
         <SectionOne onSearch={setSelectedCity} />
         {selectedCity && (

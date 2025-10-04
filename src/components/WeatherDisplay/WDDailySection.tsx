@@ -3,8 +3,6 @@ import type { DailyForecast, UnitsProps } from '@/types/types';
 import WDItemForecast from '../WDItemForecast';
 //Bootstrap
 import { Container } from 'react-bootstrap';
-//Spring
-import { useSpring, animated } from '@react-spring/web';
 
 interface WDDailySectionProps {
     dailyForecasts: DailyForecast[];

@@ -2,17 +2,20 @@
 //Components
 import Image from 'next/image';
 import type { UnitsProps } from '@/types/types';
-import { Container, Dropdown, Navbar, Form } from 'react-bootstrap';
+import { Dropdown, Navbar, Form } from 'react-bootstrap';
+import { useScaleUp } from './anim';
 //Icons
 import { IoSettingsOutline } from "react-icons/io5";
-import { FaCheck } from "react-icons/fa6";
+//Spring
+import { animated } from '@react-spring/web';
 
 interface WANavProps {
     unit: UnitsProps;
     setUnit: React.Dispatch<React.SetStateAction<UnitsProps>>;
+    handleClearCity: () => void;
 }
 
-export default function WANav({ unit, setUnit }: WANavProps) {
+export default function WANav({ unit, setUnit, handleClearCity }: WANavProps) {
     const HandleSwitchUnits = () => {
         const isMetric =
             unit.temperature === 'C' &&
@@ -26,10 +29,12 @@ export default function WANav({ unit, setUnit }: WANavProps) {
         });
     };
 
+    const startAnim = useScaleUp(150);
+
     return(
         <Navbar className='w-100'>
-            <Container>
-                <Navbar.Brand href='#home'>
+            <animated.div style={startAnim} className='container'>
+                <Navbar.Brand onClick={handleClearCity} href='#home'>
                     <Image
                         src="/images/logo.svg"
                         alt='logo'
@@ -124,7 +129,7 @@ export default function WANav({ unit, setUnit }: WANavProps) {
                         </Form.Check>
                     </Dropdown.Menu>
                 </Dropdown>
-            </Container>
+            </animated.div>
         </Navbar>
 );
 }

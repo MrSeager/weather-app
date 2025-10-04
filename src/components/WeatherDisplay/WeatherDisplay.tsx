@@ -1,22 +1,19 @@
 "use client";
 import { useState, useEffect } from 'react';
 //Components
-import Image from 'next/image';
 import type { City, WeatherData, DailyForecast, HourlyForecast, UnitsProps } from '@/types/types';
+import { useScaleUp } from '../anim';
 
 import WDMainSection from './WDMainSection';
 import WDDetailsSection from './WDDetailsSection';
 import WDDailySection from './WDDailySection';
 import WDHourlySection from './WDHourlySection';
 
-import WDItem from '../WDItem';
-import WDItemForecast from '../WDItemForecast';
-import WDHourlyItem from '../WDHourlyItem';
 import { DateTime } from 'luxon';
 //Bootstrap
-import { Container, Row, Col, Dropdown } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 //Spring
-import { useSpring, animated } from '@react-spring/web';
+import { animated } from '@react-spring/web';
 
 interface WeatherDisplayProps {
     setBgColor: (bgColor: string) => void; 
@@ -30,7 +27,8 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
     const [dailyForecasts, setDailyForecasts] = useState<DailyForecast[]>([]);
     const [groupedHourlyForecasts, setGroupedHourlyForecasts] = useState<Record<string, HourlyForecast[]>>({});
     const [selectedDay, setSelectedDay] = useState<string>('Monday');
-    
+    const startAnim = useScaleUp(250);
+
     function getWeatherIcon(code: number): string {
         if ([0].includes(code)) return 'sunny';
         if ([1, 2].includes(code)) return 'partly-cloudy';
@@ -120,7 +118,7 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
     const mmToInches = (mm: number) => (mm / 25.4).toFixed(2);
 
     return(
-        <Container>
+        <animated.div style={startAnim} className='container'>
             <Row className='pb-5 gap-lg-0 gap-3'>
                 <Col lg={9} xs={12} className='d-flex flex-column align-items-center gap-3'>
                     <WDMainSection 
@@ -156,6 +154,6 @@ export default function WeatherDisplay({ setBgColor, interpolateColor, unit, cit
                     />
                 </Col>
             </Row>
-        </Container>
+        </animated.div>
     );
 }

@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 //Components
 import debounce from 'lodash.debounce';
 import type { City } from '@/types/types';
+import { useScaleUp, useHover } from './anim';
 //Bootstrap
-import { Container, InputGroup, Button, Form, ListGroup } from 'react-bootstrap';
+import { InputGroup, Button, Form, ListGroup } from 'react-bootstrap';
 //Spring
-import { useSpring, animated } from '@react-spring/web';
+import { animated } from '@react-spring/web';
 //Icons
 import { IoIosSearch } from "react-icons/io";
 
@@ -14,7 +15,8 @@ export default function SectionOne({ onSearch }: { onSearch: (cityData: City) =>
     const [query, setQuery] = useState<string>('');
     const [suggestions, setSuggestions] = useState<City[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
-    const [isFocused, setIsFocused] = useState(false);
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+    const [hovered, setHovered] = useState<boolean>(false);
 
     const fetchSuggestions = async (name: string) => {
         if (name.length < 3) return setSuggestions([]);
@@ -47,11 +49,14 @@ export default function SectionOne({ onSearch }: { onSearch: (cityData: City) =>
             onSearch(data.results[0]);
         }
     }
-    
+
+    const startAnim = useScaleUp(50);
+    const hoverAnim = useHover(hovered, 1.05);
+
     return(
-        <Container className="py-4 d-flex flex-column gap-4 align-items-center">
+        <animated.div style={startAnim} className="container py-4 d-flex flex-column gap-4 align-items-center">
             <h1 className="text-center cs-f-bg">How's the sky looking today?</h1>
-            <InputGroup className="cs-w cs-hover-form-control gap-3">
+            <animated.div style={hoverAnim} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className="input-group cs-w cs-hover-form-control gap-3 flex-lg-row flex-column">
                 <div className={`rounded-3 px-0 d-flex flex-row cs-input-wrapper ${isFocused ? 'focused' : ''}`}>
                     <InputGroup.Text className="cs-fc-item cs-bg-sec pe-0 rounded-start-3 rounded-end-0 border-0 text-white">
                         <IoIosSearch size={25} />
@@ -83,7 +88,7 @@ export default function SectionOne({ onSearch }: { onSearch: (cityData: City) =>
                 <Button className="rounded-3 px-3 cs-btn-sec cs-transition border-0" onClick={handleSearch}>
                     Search
                 </Button>
-            </InputGroup>
-        </Container>
+            </animated.div>
+        </animated.div>
     );
 }

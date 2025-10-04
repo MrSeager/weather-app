@@ -3,8 +3,6 @@ import type { WeatherData, UnitsProps } from '@/types/types';
 import WDItem from '../WDItem';
 //Bootstrap
 import { Container, Row } from 'react-bootstrap';
-//Spring
-import { useSpring, animated } from '@react-spring/web';
 
 interface WDDetailsSectionProps {
     unit: UnitsProps;
