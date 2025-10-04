@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 //Components
 import debounce from 'lodash.debounce';
 import type { City } from '@/types/types';
@@ -14,7 +14,6 @@ import { IoIosSearch } from "react-icons/io";
 export default function SectionOne({ onSearch }: { onSearch: (cityData: City) => void }) {
     const [query, setQuery] = useState<string>('');
     const [suggestions, setSuggestions] = useState<City[]>([]);
-    const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [hovered, setHovered] = useState<boolean>(false);
 
@@ -23,39 +22,35 @@ export default function SectionOne({ onSearch }: { onSearch: (cityData: City) =>
         const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${name}&count=5`);
         const data = await res.json();
         setSuggestions(data.results || []);
-        setShowDropdown(true);
     };
 
-    const debouncedFetch = debounce(fetchSuggestions, 300);
+    const debouncedFetch = useMemo(() => debounce(fetchSuggestions, 300), []);
 
     useEffect(() => {
         debouncedFetch(query);
         return () => debouncedFetch.cancel();
-    }, [query]);
+    }, [query, debouncedFetch]);
 
     const handleSelect = (city: City) => {
         setQuery(`${city.name}, ${city.country}`);
-        setShowDropdown(false);
         onSearch(city);
-    }
+    };
 
     const handleSearch = async () => {
         if (!query) return;
-
         const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${query}`);
         const data = await res.json();
-
         if (data.results && data.results.length > 0) {
-            onSearch(data.results[0]);
+        onSearch(data.results[0]);
         }
-    }
+    };
 
     const startAnim = useScaleUp(50);
     const hoverAnim = useHover(hovered, 1.05);
 
     return(
-        <animated.div style={startAnim} className="container py-4 d-flex flex-column gap-4 align-items-center">
-            <h1 className="text-center cs-f-bg">How's the sky looking today?</h1>
+        <animated.div style={startAnim} className="container z-3 py-4 d-flex flex-column gap-4 align-items-center">
+            <h1 className="text-center cs-f-bg">How&apos;s the sky looking today?</h1>
             <animated.div style={hoverAnim} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className="input-group cs-w cs-hover-form-control gap-3 flex-lg-row flex-column">
                 <div className={`rounded-3 px-0 d-flex flex-row cs-input-wrapper ${isFocused ? 'focused' : ''}`}>
                     <InputGroup.Text className="cs-fc-item cs-bg-sec pe-0 rounded-start-3 rounded-end-0 border-0 text-white">

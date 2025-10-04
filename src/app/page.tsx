@@ -1,5 +1,4 @@
 //Components
-import styles from "./page.module.css";
 import "@/components/WeatherDisplay/style.css";
 import WeatherApp from "@/components/WeatherApp";
 
